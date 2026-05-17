@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SLTMobitel IAU Secure Reporting Portal
 
 An enterprise-grade, secure, and confidential reporting gateway for the SLTMobitel Internal Affairs Unit (IAU). This portal allows whistleblowers to report misconduct, fraud, or bribery through an encrypted and optionally anonymous channel.
@@ -78,3 +79,6 @@ slt-iau-portal/
 
 ## Security
 This application is designed for secure environments. All submissions are stored with audit trails and restricted access.
+=======
+# Complaint-portal
+>>>>>>> 8b62ad662880833eb577fd78fd9628f577a765b9
