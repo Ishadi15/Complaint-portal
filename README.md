@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+# SLTMobitel IAU Secure Reporting Portal
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An enterprise-grade, secure, and confidential reporting gateway for the SLTMobitel Internal Affairs Unit (IAU). This portal allows whistleblowers to report misconduct, fraud, or bribery through an encrypted and optionally anonymous channel.
 
-## Available Scripts
+## Project Structure
 
-In the project directory, you can run:
+```text
+slt-iau-portal/
+├── frontend/              # React app (UI/UX)
+│   ├── public/            # Static assets
+│   ├── src/
+│   │   ├── components/    # All form components
+│   │   ├── pages/         # Page containers
+│   │   ├── services/      # Axios API calls
+│   │   ├── App.js         # Root component
+│   │   └── ...
+│   └── package.json
+│
+├── backend/               # Node.js + Express API
+│   ├── config/            # DB connection configurations
+│   ├── controllers/       # Business logic / Route handlers
+│   ├── routes/            # API endpoints mapping
+│   ├── models/            # Database query abstractions
+│   ├── server.js          # Entry point
+│   └── package.json
+│
+├── database/              # SQL scripts
+│   └── schema.sql         # Database initialization
+│
+└── README.md              # Documentation
+```
 
-### `npm start`
+## Explanation of Each Folder
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Frontend (React UI/UX)
+*   **`frontend`**: Root of the React application handling the multi-step form UI.
+*   **`components`**: Contains each individual step of the form (Reporter, Complaint, Subject, Evidence, Declaration, Confirmation).
+*   **`pages`**: Contains the `Portal` container that controls step navigation and global state.
+*   **`services`**: Contains `api.js` which houses centralized Axios functions to call backend routes.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Backend (Node.js + Express API)
+*   **`backend`**: Root of the Node.js + Express REST API.
+*   **`config`**: Handles the MySQL database connection setup (`db.js`).
+*   **`controllers`**: Contains logic functions (`complaintController.js`) that handle incoming requests and business rules.
+*   **`routes`**: Defines the API endpoints (`complaintRoutes.js`) and maps them to controllers.
+*   **`models`**: SQL queries are separated here (`complaintModel.js`) to maintain clean, reusable code.
 
-### `npm test`
+### Database & Documentation
+*   **`database`**: Stores the SQL schema (`schema.sql`) for the `complaints` table.
+*   **`README.md`**: Main project documentation.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Features
 
-### `npm run build`
+- **End-to-End Encryption**: Secure data transmission.
+- **Anonymous Reporting**: Optional identity protection.
+- **Dynamic Multi-step Form**: Intuitive reporting workflow.
+- **Real-time Tracking**: Track investigation status via CRN.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Getting Started
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Prerequisites
+- Node.js (v16+)
+- MySQL Database
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Installation
 
-### `npm run eject`
+1. **Clone the repository**
+2. **Setup Database**: Execute `database/schema.sql` in your MySQL environment.
+3. **Backend Setup**:
+   - `cd backend`
+   - `npm install`
+   - Configure `.env` (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME).
+   - `npm start`
+4. **Frontend Setup**:
+   - `cd frontend`
+   - `npm install`
+   - `npm start`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Security
+This application is designed for secure environments. All submissions are stored with audit trails and restricted access.

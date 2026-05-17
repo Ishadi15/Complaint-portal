@@ -1,0 +1,161 @@
+import React, { useState } from 'react';
+import CoverPage from '../components/CoverPage';
+import ReporterForm from '../components/ReporterForm';
+import ComplaintForm from '../components/ComplaintForm';
+import SubjectForm from '../components/SubjectForm';
+import EvidenceForm from '../components/EvidenceForm';
+import DeclarationForm from '../components/DeclarationForm';
+import Confirmation from '../components/Confirmation';
+import TrackComplaint from '../components/TrackComplaint';
+import AdminLogin from '../components/AdminLogin';
+import AdminDashboard from '../components/AdminDashboard';
+import { FaGlobe, FaMoon, FaEnvelope, FaPhoneAlt, FaLock } from 'react-icons/fa';
+import '../components/CoverPage.css';
+
+function Portal() {
+  const [step, setStep] = useState(0);
+  const [complaintId, setComplaintId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const nextStep = (id) => {
+    if (id) setComplaintId(id);
+    setStep(step + 1);
+  };
+
+  const prevStep = () => setStep(step - 1);
+
+  const goToTrack = () => setStep(10);
+  const goToHome = () => { setStep(0); setIsAdmin(false); };
+  const goToAdminLogin = () => setStep(20);
+  const onAdminLoginSuccess = () => { setIsAdmin(true); setStep(21); };
+  const onAdminLogout = () => { localStorage.removeItem('adminToken'); setIsAdmin(false); setStep(0); };
+
+  const progress = step > 0 && step < 6 ? ((step - 1) / 5) * 100 : 0;
+
+  return (
+    <div className="cover-page-wrapper" style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh', 
+      background: (step === 10 || step === 20 || step === 21) ? '#f1f5f9' : '' 
+    }}>
+      {/* Header (Top Navigation Bar) */}
+      <header className="navbar-portal">
+        <div className="nav-left" onClick={goToHome} style={{ cursor: 'pointer' }}>
+          <img src="/logo_mobitel.png" alt="SLTMOBITEL Logo" className="nav-logo-portal" />
+          <div className="nav-brand-container">
+            <div className="nav-brand-name">SLT<span>MOBITEL</span></div>
+            <div className="nav-unit-badge">Internal Affairs Unit | Secure Reporting Portal</div>
+          </div>
+        </div>
+        
+        <div className="nav-right">
+          {step === 0 && (
+            <nav className="nav-menu-portal">
+              <a href="#home" className="nav-link-portal">Home</a>
+              <a href="#about" className="nav-link-portal">About Portal</a>
+              <a href="#how-it-works" className="nav-link-portal">How It Works</a>
+              <a href="#faq" className="nav-link-portal">FAQ</a>
+              <a href="#track" className="nav-link-portal" onClick={goToTrack}>Track</a>
+              <a href="#admin" onClick={(e) => { e.preventDefault(); goToAdminLogin(); }} style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                color: '#0057b8', 
+                background: '#f1f5f9',
+                padding: '8px 15px',
+                borderRadius: '50px',
+                fontSize: '0.85rem',
+                border: '1px solid #e2e8f0',
+                transition: 'all 0.3s'
+              }} className="nav-admin-btn">
+                <FaLock style={{ fontSize: '0.75rem' }} /> Admin Access
+              </a>
+            </nav>
+          )}
+          
+          <div className="nav-controls">
+            {step === 21 && (
+                <span style={{ color: '#0057b8', fontWeight: '700', marginRight: '15px' }}>Admin Mode</span>
+            )}
+            <div className="lang-selector">
+              <FaGlobe /> EN | සිං | தமி
+            </div>
+            <div className="theme-toggle" style={{ cursor: 'pointer' }}>
+              <FaMoon />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <div style={{ flex: 1, padding: (step > 0 && step < 10) ? '40px 20px' : '0' }}>
+        {/* Progress Bar (Only show during form steps) */}
+        {step > 0 && step < 6 && (
+          <div style={{ maxWidth: '750px', margin: '0 auto 20px' }}>
+            <div className="progress-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+            </div>
+            <p style={{ textAlign: 'right', color: '#ffffff', fontWeight: '800', fontSize: '15px', marginTop: '8px' }}>
+              Step {step} of 5
+            </p>
+          </div>
+        )}
+        
+        {/* Dynamic Component Rendering */}
+        {step === 0 && <CoverPage onStart={() => setStep(1)} onTrack={goToTrack} />}
+        {step === 1 && <ReporterForm onNext={(data) => nextStep(data.id)} />}
+        {step === 2 && <ComplaintForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
+        {step === 3 && <SubjectForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
+        {step === 4 && <EvidenceForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
+        {step === 5 && <DeclarationForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
+        {step === 6 && <Confirmation complaintId={complaintId} />}
+        {step === 10 && <TrackComplaint onBack={goToHome} />}
+        {step === 20 && <AdminLogin onLoginSuccess={onAdminLoginSuccess} onBack={goToHome} />}
+        {step === 21 && <AdminDashboard onLogout={onAdminLogout} />}
+      </div>
+
+      {/* Footer */}
+      <footer id="contact" className="footer-portal">
+        <div className="footer-content">
+          <div className="footer-brand">
+            <h2>SLT<span>MOBITEL</span></h2>
+            <p>Internal Affairs Unit</p>
+            <p style={{ marginTop: '20px', fontSize: '0.9rem' }}>
+              Strengthening integrity and transparency across our organization.
+            </p>
+          </div>
+          
+          <div className="footer-links">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="#about">About IAU</a></li>
+              <li><a href="#privacy">Privacy Policy</a></li>
+              <li><a href="#terms">Terms of Use</a></li>
+              <li><a href="#faq">FAQ</a></li>
+            </ul>
+          </div>
+          
+          <div className="footer-links">
+            <h4>Contact Us</h4>
+            <ul>
+              <li><FaEnvelope style={{ marginRight: '10px' }}/> iau@sltmobitel.lk</li>
+              <li><FaPhoneAlt style={{ marginRight: '10px' }}/> +94 11 234 5678</li>
+              <li>IAU Headquarters, Colombo, Sri Lanka</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} SLTMOBITEL Internal Affairs Unit. All Rights Reserved.</p>
+          <div className="footer-legal">
+            <a href="#privacy" style={{ marginRight: '20px' }}>Privacy Policy</a>
+            <a href="#terms">Terms of Use</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+export default Portal;
