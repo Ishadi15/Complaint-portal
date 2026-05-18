@@ -1,7 +1,32 @@
-import React from 'react';
-import { FaShieldAlt, FaBolt, FaUserSecret, FaArrowRight, FaFileAlt, FaCheckCircle, FaBuilding, FaLock, FaCertificate } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaShieldAlt, FaBolt, FaUserSecret, FaArrowRight, FaFileAlt, FaCheckCircle, FaBuilding, FaLock, FaCertificate, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 function Landing({ onStart }) {
+  const [openFaq, setOpenFaq] = useState(null);
+
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const faqs = [
+    {
+      question: "Can I report anonymously?",
+      answer: "Yes. You may choose to submit your complaint as an anonymous reporter. In that case, no personally identifiable information is required or recorded. Your identity will never be disclosed to the subject of the complaint or any third party."
+    },
+    {
+      question: "What happens after submission?",
+      answer: "Once submitted, your complaint is encrypted and securely forwarded to the Internal Affairs Unit (IAU). You will receive a unique Complaint Reference Number (CRN). The IAU will review the report, conduct a preliminary assessment, and initiate a formal investigation if warranted. You can monitor progress using your CRN."
+    },
+    {
+      question: "Can I upload evidence?",
+      answer: "Yes. The portal supports uploading supporting documents, images (JPG/PNG), and video files (MP4) up to 25 MB per file. Evidence such as financial records, emails, screenshots, or photographs significantly strengthens the investigation process."
+    },
+    {
+      question: "How do I track my complaint?",
+      answer: "Click the <strong>\"Track Complaint\"</strong> button on the home page and enter your Complaint Reference Number (CRN). The system will display the current status of your case — whether it is Under Review, In Progress, or Resolved — in real time."
+    }
+  ];
+
   return (
     <div style={{ animation: 'slideUp 0.8s ease', display: 'flex', flexDirection: 'column', gap: '40px' }}>
       
@@ -147,19 +172,49 @@ function Landing({ onStart }) {
       {/* FAQ Section */}
       <div id="faq" style={{ marginTop: '40px' }}>
         <h2 className="section-title">Frequently Asked Questions</h2>
-        <div className="faq-container">
-          <div className="faq-item">
-            <h4>Will my identity be revealed to the accused?</h4>
-            <p>Absolutely not. If you choose to submit anonymously, your identity is never captured or shared. Even if you provide details, they are strictly confidential and vaulted exclusively for IAU personnel.</p>
-          </div>
-          <div className="faq-item">
-            <h4>What happens after I submit a report?</h4>
-            <p>Your report is immediately encrypted and routed to the IAU. A unique CRN (Complaint Reference Number) will be provided to you upon submission. You can use this number to check the status of your report offline.</p>
-          </div>
-          <div className="faq-item">
-            <h4>What type of evidence should I upload?</h4>
-            <p>We accept PDFs, images (JPG/PNG), and video recordings (MP4) up to 25MB. Financial records, emails, or photographic proof greatly assist the IAU in conducting swift investigations.</p>
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            {faqs.map((faq, index) => (
+              <div 
+                key={index} 
+                style={{ 
+                  background: 'var(--glass-bg)', 
+                  borderRadius: '10px', 
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+                  overflow: 'hidden',
+                  border: '1px solid var(--glass-border)'
+                }}
+              >
+                <div 
+                  onClick={() => toggleFaq(index)}
+                  style={{
+                    padding: '20px 25px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    background: openFaq === index ? 'rgba(255,255,255,0.05)' : 'transparent',
+                    transition: 'background 0.3s ease'
+                  }}
+                >
+                  <h4 style={{ margin: 0, color: '#f8fafc', fontSize: '1.1rem', fontWeight: '600' }}>{faq.question}</h4>
+                  {openFaq === index ? <FaChevronUp color="#94a3b8" /> : <FaChevronDown color="#94a3b8" />}
+                </div>
+                {openFaq === index && (
+                  <div style={{ 
+                    padding: '0 25px 25px 25px', 
+                    color: '#cbd5e1', 
+                    lineHeight: '1.6', 
+                    fontSize: '0.95rem', 
+                    background: 'rgba(255,255,255,0.05)',
+                    borderTop: '1px solid rgba(255,255,255,0.1)'
+                  }}>
+                    <div style={{ marginTop: '15px' }}>
+                        <p dangerouslySetInnerHTML={{ __html: faq.answer }} style={{ margin: 0 }}></p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
         </div>
       </div>
 
