@@ -36,8 +36,7 @@ function Portal() {
     <div className="cover-page-wrapper" style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      minHeight: '100vh', 
-      background: (step === 10 || step === 20 || step === 21) ? '#f1f5f9' : '' 
+      minHeight: '100vh'
     }}>
       {/* Header (Top Navigation Bar) */}
       <header className="navbar-portal">
@@ -60,16 +59,18 @@ function Portal() {
               <a href="#admin" onClick={(e) => { e.preventDefault(); goToAdminLogin(); }} style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
-                gap: '8px', 
+                justifyContent: 'center',
+                gap: '10px', 
                 color: '#0057b8', 
                 background: '#f1f5f9',
-                padding: '8px 15px',
+                padding: '12px 40px',
                 borderRadius: '50px',
-                fontSize: '0.85rem',
+                fontSize: '1rem',
+                fontWeight: '700',
                 border: '1px solid #e2e8f0',
                 transition: 'all 0.3s'
               }} className="nav-admin-btn">
-                <FaLock style={{ fontSize: '0.75rem' }} /> Admin Access
+                <FaLock style={{ fontSize: '0.9rem' }} /> Admin Access
               </a>
             </nav>
           )}
@@ -92,7 +93,7 @@ function Portal() {
       <div style={{ flex: 1, padding: (step > 0 && step < 10) ? '40px 20px' : '0' }}>
         {/* Progress Bar (Only show during form steps) */}
         {step > 0 && step < 6 && (
-          <div style={{ maxWidth: '750px', margin: '0 auto 20px' }}>
+          <div style={{ maxWidth: '1000px', margin: '0 auto 20px' }}>
             <div className="progress-container">
               <div className="progress-bar" style={{ width: `${progress}%` }}></div>
             </div>

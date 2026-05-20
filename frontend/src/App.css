@@ -20,8 +20,27 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #001e3c 0%, #0057b8 100%);
+  /* Very modern, desaturated dark blue base */
+  background-color: #08101a;
+  
+  /* Abstract micro-grid and subtle radial glows for professional tech vibe */
+  background-image: 
+    /* Subtle top-left sweep (SLT Blue) */
+    radial-gradient(ellipse at 0% 0%, rgba(0, 77, 128, 0.25) 0%, transparent 60%),
+    /* Soft bottom-right glow (SLT Blue variant) */
+    radial-gradient(ellipse at 100% 100%, rgba(0, 51, 85, 0.3) 0%, transparent 60%),
+    /* Tiny abstract micro-grid lines */
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    
+  background-size: 
+    100% 100%,
+    100% 100%,
+    32px 32px,
+    32px 32px;
+    
   background-attachment: fixed;
+  background-position: 0 0, 0 0, center center, center center;
   color: #ffffff;
   line-height: 1.5;
   margin: 0;
@@ -265,29 +284,29 @@ body {
 
 /* ===== SHARED FORM STYLES ===== */
 form {
-  background: #001a33; /* Solid Deep Navy for maximum contrast */
-  padding: 40px;
+  background: #ffffff; /* White background for maximum readability */
+  padding: 30px 40px; /* Reduced top/bottom padding */
   border-radius: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  margin: 40px auto;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  max-width: 700px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); /* Softer shadow */
+  margin: 25px auto; /* Reduced external margin */
+  border: 1px solid rgba(0, 0, 0, 0.08); /* Lighter border */
+  max-width: 1000px;
   width: 100%;
 }
 
 form h2 {
-  color: #ffffff;
-  margin-bottom: 25px;
+  color: #0f172a;
+  margin-bottom: 10px; /* Reduced margin */
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
 
 label {
-  color: #ffffff; /* Brighter white for better visibility */
+  color: #1e293b; /* Dark text for better visibility */
   font-weight: 700;
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-top: 15px; /* Reduced margin */
+  margin-bottom: 8px; /* Reduced margin */
   display: block;
   font-size: 0.95rem;
   letter-spacing: 0.3px;
@@ -298,10 +317,10 @@ select,
 textarea {
   width: 100%;
   padding: 14px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #cbd5e1;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
+  background: #f8fafc;
+  color: #0f172a;
   font-family: inherit;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -317,8 +336,8 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: #0070f3;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 4px rgba(0, 112, 243, 0.4);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 112, 243, 0.15);
 }
 
 .progress-container {
@@ -379,7 +398,7 @@ button[type="button"]:hover {
 /* ===== NEW FORM CLASSES FOR UNIFIED THEME ===== */
 .standard-form .form-subtitle {
   color: var(--text-muted);
-  margin-bottom: 35px;
+  margin-bottom: 20px; /* Reduced margin */
   font-size: 0.95rem;
 }
 
@@ -387,14 +406,14 @@ button[type="button"]:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  margin-bottom: 35px;
+  margin-bottom: 20px; /* Reduced margin */
 }
 
 .radio-card {
-  padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 10px; /* Reduced height/padding */
+  border: 1px solid #cbd5e1;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  background: #f8fafc;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -416,8 +435,8 @@ button[type="button"]:hover {
 }
 
 .radio-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
+  font-size: 18px;
+  margin-bottom: 2px; /* Reduced height margin */
   color: var(--text-muted);
 }
 
@@ -428,8 +447,8 @@ button[type="button"]:hover {
 
 .radio-title {
   font-weight: 700;
-  color: #ffffff;
-  font-size: 1.1rem;
+  color: #1e293b;
+  font-size: 0.95rem; /* Slightly smaller for reduced height */
 }
 
 .active-named .radio-title,
@@ -438,9 +457,9 @@ button[type="button"]:hover {
 }
 
 .radio-desc {
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* Smaller font */
   color: #94a3b8;
-  margin-top: 4px;
+  margin-top: 2px; /* Reduced height margin */
 }
 
 .active-named .radio-desc,
@@ -583,13 +602,12 @@ button[type="button"]:hover {
   align-items: center;
   text-align: center;
   padding: 60px 40px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
+  background: #ffffff; /* White background */
   border-radius: 24px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); /* Softer shadow */
   max-width: 700px;
   margin: 40px auto;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.08); /* Lighter border */
 }
 
 .spinner {
@@ -610,7 +628,7 @@ button[type="button"]:hover {
 }
 
 .confirmation-container h2 {
-  color: #ffffff;
+  color: #0f172a; /* Dark text */
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 15px;
@@ -619,7 +637,7 @@ button[type="button"]:hover {
 
 .confirmation-container .form-subtitle,
 .confirmation-container .tracking-info {
-  color: #cbd5e1;
+  color: #64748b; /* Gray text */
 }
 
 .crn-box {
@@ -633,7 +651,7 @@ button[type="button"]:hover {
 
 .crn-label {
   font-size: 0.95rem;
-  color: #ffffff;
+  color: #0f172a; /* Dark text */
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: 700;
@@ -644,9 +662,9 @@ button[type="button"]:hover {
   font-size: 2.8rem;
   letter-spacing: 3px;
   margin-top: 15px;
-  color: #ffffff;
+  color: #0f172a; /* Dark text */
   font-weight: 800;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  text-shadow: none; /* Removed shadow for dark text */
 }
 
 .tracking-info {

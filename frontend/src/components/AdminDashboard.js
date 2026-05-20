@@ -4,6 +4,9 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import './CoverPage.css';
 
+// Dynamic API URL config for local testing and production deployment
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 const CATEGORIES = [
     'All Categories',
     'Financial Fraud',
@@ -27,7 +30,7 @@ function AdminDashboard({ onLogout }) {
     const [showFilters, setShowFilters] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-    // Filter state
+    // Filter states
     const [filters, setFilters] = useState({
         crn: '',
         status: 'all',
@@ -37,14 +40,15 @@ function AdminDashboard({ onLogout }) {
         reporter: '',
     });
 
+    // Fetch complaints and system analytics metrics
     const fetchData = async () => {
         const token = localStorage.getItem('adminToken');
         if (!token) return onLogout();
 
         try {
             const [compRes, statsRes] = await Promise.all([
-                fetch('http://localhost:5000/api/admin/complaints', { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch('http://localhost:5000/api/admin/stats', { headers: { 'Authorization': `Bearer ${token}` } })
+                fetch(`${API_URL}/api/admin/complaints`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${API_URL}/api/admin/stats`, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
 
             const compData = await compRes.json();
@@ -61,10 +65,11 @@ function AdminDashboard({ onLogout }) {
 
     useEffect(() => { fetchData(); }, []);
 
+    // Update case lifecycle status handler
     const updateStatus = async (id, newStatus) => {
         const token = localStorage.getItem('adminToken');
         try {
-            const response = await fetch('http://localhost:5000/api/admin/update-status', {
+            const response = await fetch(`${API_URL}/api/admin/update-status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -95,14 +100,13 @@ function AdminDashboard({ onLogout }) {
         filters.reporter,
     ].filter(Boolean).length;
 
+    // Advanced search evaluation matrix
     const filteredComplaints = complaints.filter(comp => {
         const status = comp.status || 'Under Review';
         const compDate = new Date(comp.created_at);
 
-        // Status filter
         if (filters.status !== 'all' && status !== filters.status) return false;
 
-        // CRN / Ref number filter
         if (filters.crn) {
             const query = filters.crn.toLowerCase();
             const crnMatch = (comp.crn || '').toLowerCase().includes(query);
@@ -110,26 +114,22 @@ function AdminDashboard({ onLogout }) {
             if (!crnMatch && !idMatch) return false;
         }
 
-        // Category filter
         if (filters.category !== 'All Categories') {
             if ((comp.complaint_category || '') !== filters.category) return false;
         }
 
-        // Date From filter
         if (filters.dateFrom) {
             const from = new Date(filters.dateFrom);
             from.setHours(0, 0, 0, 0);
             if (compDate < from) return false;
         }
 
-        // Date To filter
         if (filters.dateTo) {
             const to = new Date(filters.dateTo);
             to.setHours(23, 59, 59, 999);
             if (compDate > to) return false;
         }
 
-        // Reporter name filter
         if (filters.reporter) {
             const query = filters.reporter.toLowerCase();
             if (!(comp.full_name || 'anonymous').toLowerCase().includes(query)) return false;
@@ -138,10 +138,10 @@ function AdminDashboard({ onLogout }) {
         return true;
     });
 
+    // Generate executive system reporting printouts
     const downloadPDF = () => {
         try {
             const doc = new jsPDF();
-            
             doc.setFontSize(18);
             doc.text('IAU Complaint Records', 14, 22);
             
@@ -179,7 +179,7 @@ function AdminDashboard({ onLogout }) {
         }
     };
 
-    // ---- Styles ----
+    // Shared UI Style Objects
     const inputStyle = {
         padding: '9px 13px',
         borderRadius: '8px',
@@ -208,7 +208,7 @@ function AdminDashboard({ onLogout }) {
     return (
         <div className="admin-dashboard" style={{ padding: '30px', maxWidth: '1300px', margin: '0 auto', color: '#334155' }}>
 
-            {/* Advanced Glassmorphism Header */}
+            {/* Advanced Glassmorphism Header Element */}
             <div style={{
                 background: 'rgba(15, 23, 42, 0.85)',
                 backdropFilter: 'blur(12px)',
@@ -222,28 +222,23 @@ function AdminDashboard({ onLogout }) {
                 borderRadius: '16px',
                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
             }}>
-                {/* Left side: Breadcrumb / Title */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1' }}>
                     <span style={{ fontWeight: '600', color: '#f1f5f9', fontSize: '1.125rem', letterSpacing: '0.025em' }}>IAU Admin</span>
                     <span style={{ color: '#64748b' }}>/</span>
                     <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#60a5fa' }}>Case Management</span>
                 </div>
 
-                {/* Right side: Controls */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                    {/* Notification Bell */}
                     <div style={{ position: 'relative', cursor: 'pointer', color: '#94a3b8', transition: 'color 0.2s' }} 
                          onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
                          onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>
                         <FaBell style={{ fontSize: '1.25rem' }} />
-                        {/* Notification Badge */}
                         <span style={{ position: 'absolute', top: '-4px', right: '-4px', display: 'flex', height: '12px', width: '12px' }}>
                             <span style={{ position: 'absolute', display: 'inline-flex', height: '100%', width: '100%', borderRadius: '50%', background: '#f87171', opacity: '0.75' }}></span>
                             <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '50%', height: '12px', width: '12px', background: '#ef4444', border: '2px solid rgba(15, 23, 42, 1)' }}></span>
                         </span>
                     </div>
 
-                    {/* Admin Profile Dropdown */}
                     <div style={{ position: 'relative' }}>
                         <div 
                             style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '8px', borderRadius: '8px', transition: 'all 0.2s', border: '1px solid transparent', background: isProfileOpen ? 'rgba(30, 41, 59, 0.5)' : 'transparent', borderColor: isProfileOpen ? 'rgba(51, 65, 85, 1)' : 'transparent' }}
@@ -261,7 +256,6 @@ function AdminDashboard({ onLogout }) {
                             <FaChevronDown style={{ color: '#64748b', fontSize: '0.875rem', transition: 'transform 0.3s', transform: isProfileOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                         </div>
 
-                        {/* Dropdown Menu */}
                         {isProfileOpen && (
                             <div style={{ position: 'absolute', right: '0', marginTop: '12px', width: '224px', background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', padding: '8px 0', zIndex: '50' }}>
                                 <div style={{ padding: '8px 16px', borderBottom: '1px solid #334155', marginBottom: '4px' }}>
@@ -274,8 +268,7 @@ function AdminDashboard({ onLogout }) {
                                     onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)'; e.currentTarget.style.color = '#fca5a5'; }}
                                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#f87171'; }}
                                 >
-                                    <FaSignOutAlt />
-                                    Secure Logout
+                                    <FaSignOutAlt /> Secure Logout
                                 </button>
                             </div>
                         )}
@@ -283,7 +276,7 @@ function AdminDashboard({ onLogout }) {
                 </div>
             </div>
 
-            {/* Stats Cards */}
+            {/* Matrix Analytic Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
                 <div style={{ background: 'white', padding: '25px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', borderTop: '4px solid #0057b8' }}>
                     <div style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '8px' }}>Total Complaints</div>
@@ -303,11 +296,9 @@ function AdminDashboard({ onLogout }) {
                 </div>
             </div>
 
-            {/* Complaints Table Card */}
+            {/* Complaints Data Grid Structure */}
             <div style={{ background: 'white', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
-
-                {/* Table Header + Filter Toggle */}
-                <div style={{ padding: '20px 30px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ padding: '20px 30px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifycontent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                     <div>
                         <h3 style={{ margin: 0, color: '#001e3c' }}>Complaint Records</h3>
                         <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>
@@ -315,182 +306,78 @@ function AdminDashboard({ onLogout }) {
                         </p>
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <button
-                            onClick={downloadPDF}
-                            style={{
-                                background: '#dc2626',
-                                color: 'white',
-                                border: 'none',
-                                padding: '9px 15px',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '7px',
-                                fontWeight: '600',
-                                fontSize: '0.85rem',
-                                transition: 'all 0.2s',
-                            }}
-                        >
+                        <button onClick={downloadPDF} style={{ background: '#dc2626', color: 'white', border: 'none', padding: '9px 15px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '7px', fontWeight: '600', fontSize: '0.85rem', transition: 'all 0.2s' }}>
                             <FaFilePdf /> Export PDF
                         </button>
-                        <button
-                            onClick={() => setShowFilters(v => !v)}
-                            style={{
-                                background: showFilters ? '#0057b8' : '#f1f5f9',
-                                color: showFilters ? 'white' : '#334155',
-                                border: 'none',
-                                padding: '9px 18px',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '7px',
-                                fontWeight: '600',
-                                fontSize: '0.85rem',
-                                transition: 'all 0.2s',
-                                position: 'relative',
-                            }}
-                        >
-                            <FaFilter />
-                            Filters
+                        <button onClick={() => setShowFilters(v => !v)} style={{ background: showFilters ? '#0057b8' : '#f1f5f9', color: showFilters ? 'white' : '#334155', border: 'none', padding: '9px 18px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '7px', fontWeight: '600', fontSize: '0.85rem', transition: 'all 0.2s', position: 'relative' }}>
+                            <FaFilter /> Filters
                             {activeFilterCount > 0 && (
-                                <span style={{
-                                    background: '#ef4444',
-                                    color: 'white',
-                                    borderRadius: '50%',
-                                    width: '18px',
-                                    height: '18px',
-                                    fontSize: '0.7rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontWeight: '700',
-                                    position: 'absolute',
-                                    top: '-7px',
-                                    right: '-7px',
-                                }}>
+                                <span style={{ background: '#ef4444', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', position: 'absolute', top: '-7px', right: '-7px' }}>
                                     {activeFilterCount}
                                 </span>
                             )}
                         </button>
-                        <button
-                            onClick={fetchData}
-                            title="Refresh"
-                            style={{ background: '#f1f5f9', border: 'none', padding: '9px 13px', borderRadius: '8px', cursor: 'pointer', color: '#334155', display: 'flex', alignItems: 'center' }}
-                        >
+                        <button onClick={fetchData} title="Refresh" style={{ background: '#f1f5f9', border: 'none', padding: '9px 13px', borderRadius: '8px', cursor: 'pointer', color: '#334155', display: 'flex', alignItems: 'center' }}>
                             <FaSyncAlt />
                         </button>
                     </div>
                 </div>
 
-                {/* Filter Panel */}
+                {/* Filter Sub-Panel UI component */}
                 {showFilters && (
-                    <div style={{
-                        padding: '20px 30px',
-                        borderBottom: '1px solid #f1f5f9',
-                        background: '#f8fafc',
-                        animation: 'fadeIn 0.2s ease',
-                    }}>
+                    <div style={{ padding: '20px 30px', borderBottom: '1px solid #f1f5f9', background: '#f8fafc', animation: 'fadeIn 0.2s ease' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                             <span style={{ fontWeight: '700', color: '#001e3c', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '7px' }}>
                                 <FaFilter style={{ color: '#0057b8' }} /> Filter Complaints
                             </span>
                             {activeFilterCount > 0 && (
-                                <button
-                                    onClick={clearFilters}
-                                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}
-                                >
+                                <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                     <FaTimes /> Clear All Filters
                                 </button>
                             )}
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
-
-                            {/* Reference / CRN */}
                             <div>
                                 <label style={labelStyle}>Ref / CRN Number</label>
                                 <div style={{ position: 'relative' }}>
                                     <FaSearch style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.75rem' }} />
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. CRN-2024-001"
-                                        value={filters.crn}
-                                        onChange={e => handleFilterChange('crn', e.target.value)}
-                                        style={{ ...inputStyle, paddingLeft: '30px' }}
-                                    />
+                                    <input type="text" placeholder="e.g. CRN-2024-001" value={filters.crn} onChange={e => handleFilterChange('crn', e.target.value)} style={{ ...inputStyle, paddingLeft: '30px' }} />
                                 </div>
                             </div>
-
-                            {/* Reporter Name */}
                             <div>
                                 <label style={labelStyle}>Reporter Name</label>
                                 <div style={{ position: 'relative' }}>
                                     <FaSearch style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.75rem' }} />
-                                    <input
-                                        type="text"
-                                        placeholder="Search by name..."
-                                        value={filters.reporter}
-                                        onChange={e => handleFilterChange('reporter', e.target.value)}
-                                        style={{ ...inputStyle, paddingLeft: '30px' }}
-                                    />
+                                    <input type="text" placeholder="Search by name..." value={filters.reporter} onChange={e => handleFilterChange('reporter', e.target.value)} style={{ ...inputStyle, paddingLeft: '30px' }} />
                                 </div>
                             </div>
-
-                            {/* Status */}
                             <div>
                                 <label style={labelStyle}>Status</label>
-                                <select
-                                    value={filters.status}
-                                    onChange={e => handleFilterChange('status', e.target.value)}
-                                    style={inputStyle}
-                                >
+                                <select value={filters.status} onChange={e => handleFilterChange('status', e.target.value)} style={inputStyle}>
                                     {STATUS_OPTIONS.map(opt => (
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                                     ))}
                                 </select>
                             </div>
-
-                            {/* Category */}
                             <div>
                                 <label style={labelStyle}>Category</label>
-                                <select
-                                    value={filters.category}
-                                    onChange={e => handleFilterChange('category', e.target.value)}
-                                    style={inputStyle}
-                                >
+                                <select value={filters.category} onChange={e => handleFilterChange('category', e.target.value)} style={inputStyle}>
                                     {CATEGORIES.map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>
                                     ))}
                                 </select>
                             </div>
-
-                            {/* Date From */}
                             <div>
                                 <label style={labelStyle}>Date From</label>
-                                <input
-                                    type="date"
-                                    value={filters.dateFrom}
-                                    onChange={e => handleFilterChange('dateFrom', e.target.value)}
-                                    style={inputStyle}
-                                />
+                                <input type="date" value={filters.dateFrom} onChange={e => handleFilterChange('dateFrom', e.target.value)} style={inputStyle} />
                             </div>
-
-                            {/* Date To */}
                             <div>
                                 <label style={labelStyle}>Date To</label>
-                                <input
-                                    type="date"
-                                    value={filters.dateTo}
-                                    onChange={e => handleFilterChange('dateTo', e.target.value)}
-                                    style={inputStyle}
-                                />
+                                <input type="date" value={filters.dateTo} onChange={e => handleFilterChange('dateTo', e.target.value)} style={inputStyle} />
                             </div>
-
                         </div>
 
-                        {/* Active filter chips */}
                         {activeFilterCount > 0 && (
                             <div style={{ marginTop: '14px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                                 {filters.crn && <FilterChip label={`CRN: ${filters.crn}`} onRemove={() => handleFilterChange('crn', '')} />}
@@ -504,7 +391,7 @@ function AdminDashboard({ onLogout }) {
                     </div>
                 )}
 
-                {/* Table */}
+                {/* Tabular Records Matrix Container */}
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead style={{ background: '#f8fafc', color: '#64748b', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -530,17 +417,7 @@ function AdminDashboard({ onLogout }) {
                                 </tr>
                             ) : (
                                 filteredComplaints.map((comp, idx) => (
-                                    <tr
-                                        key={comp.id}
-                                        style={{
-                                            borderBottom: '1px solid #f1f5f9',
-                                            fontSize: '0.875rem',
-                                            background: idx % 2 === 0 ? 'white' : '#fafbfc',
-                                            transition: 'background 0.15s',
-                                        }}
-                                        onMouseEnter={e => e.currentTarget.style.background = '#f0f7ff'}
-                                        onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? 'white' : '#fafbfc'}
-                                    >
+                                    <tr key={comp.id} style={{ borderBottom: '1px solid #f1f5f9', fontSize: '0.875rem', background: idx % 2 === 0 ? 'white' : '#fafbfc', transition: 'background 0.15s' }} onMouseEnter={e => e.currentTarget.style.background = '#f0f7ff'} onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? 'white' : '#fafbfc'}>
                                         <td style={{ padding: '18px 25px' }}>
                                             <div style={{ fontWeight: '700', color: '#0057b8', fontFamily: 'monospace', fontSize: '0.85rem' }}>{comp.crn || 'N/A'}</div>
                                             <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>ID: {comp.id}</div>
@@ -562,11 +439,7 @@ function AdminDashboard({ onLogout }) {
                                             <StatusBadge status={comp.status} />
                                         </td>
                                         <td style={{ padding: '18px 25px' }}>
-                                            <select
-                                                value={comp.status || 'Under Review'}
-                                                onChange={(e) => updateStatus(comp.id, e.target.value)}
-                                                style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '0.8rem', border: '1.5px solid #e2e8f0', color: '#334155', outline: 'none', cursor: 'pointer', background: 'white' }}
-                                            >
+                                            <select value={comp.status || 'Under Review'} onChange={(e) => updateStatus(comp.id, e.target.value)} style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '0.8rem', border: '1.5px solid #e2e8f0', color: '#334155', outline: 'none', cursor: 'pointer', background: 'white' }}>
                                                 <option value="Under Review">Under Review</option>
                                                 <option value="In Progress">In Progress</option>
                                                 <option value="Resolved">Resolved</option>
@@ -607,16 +480,9 @@ function StatusBadge({ status }) {
 
 function FilterChip({ label, onRemove }) {
     return (
-        <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: '5px',
-            background: '#dbeafe', color: '#1e40af',
-            padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '600',
-        }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#dbeafe', color: '#1e40af', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '600' }}>
             {label}
-            <FaTimes
-                onClick={onRemove}
-                style={{ cursor: 'pointer', fontSize: '0.65rem', opacity: 0.7 }}
-            />
+            <FaTimes onClick={onRemove} style={{ cursor: 'pointer', fontSize: '0.65rem', opacity: 0.7 }} />
         </span>
     );
 }

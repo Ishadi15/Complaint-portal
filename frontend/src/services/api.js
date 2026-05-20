@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: 'http://localhost:5000/api/complaints' });
+// Use environment variable for API URL, fallback to localhost
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+const API = axios.create({ 
+    baseURL: `${API_URL}/api/complaints` 
+});
 
 // Step 1: Reporter
 export const saveReporter = (data) => API.post('/reporter', data);

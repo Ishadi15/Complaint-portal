@@ -45,30 +45,36 @@ function ReporterForm({ onNext }) {
         </label>
       </div>
 
-      <label>Your Category</label>
-      <select name="reporter_category" value={formData.reporter_category} onChange={handleChange} required>
-        <option value="">Select Category</option>
-        <option>Staff - SLT</option>
-        <option>Staff - Mobitel</option>
-        <option>Partner / Vendor</option>
-        <option>Customer</option>
-        <option>Other</option>
-      </select>
+      <div className="form-row" style={{ alignItems: 'flex-start' }}>
+        <div>
+          <label>Your Category</label>
+          <select name="reporter_category" value={formData.reporter_category} onChange={handleChange} required>
+            <option value="">Select Category</option>
+            <option>Staff - SLT</option>
+            <option>Staff - Mobitel</option>
+            <option>Partner / Vendor</option>
+            <option>Customer</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        {formData.submission_type === 'Named' && (
+          <div className="fade-in-section" style={{ marginTop: 0 }}>
+            <label>Full Name</label>
+            <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} placeholder="John Doe" required/>
+          </div>
+        )}
+      </div>
 
       {formData.submission_type === 'Named' && (
-        <div className="fade-in-section">
-          <label>Full Name</label>
-          <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} placeholder="John Doe" required/>
-          
-          <div className="form-row">
-            <div>
-              <label>Email</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="john@example.com" required/>
-            </div>
-            <div>
-              <label>Phone</label>
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="+94 77 XXX XXXX" required/>
-            </div>
+        <div className="form-row fade-in-section" style={{ marginTop: 0 }}>
+          <div>
+            <label>Email</label>
+            <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="john@example.com" required/>
+          </div>
+          <div>
+            <label>Phone</label>
+            <input type="text" name="phone" value={formData.phone} onChange={handleChange} placeholder="+94 77 XXX XXXX" required/>
           </div>
         </div>
       )}

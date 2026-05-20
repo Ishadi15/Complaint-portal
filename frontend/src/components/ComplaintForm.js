@@ -11,7 +11,17 @@ function ComplaintForm({ onNext, prevStep, complaintId }) {
     frequency: ''
   });
 
-  const handleChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = e => {
+    if (e.target.name === 'description') {
+      const words = e.target.value.trim().split(/\s+/).filter(w => w.length > 0);
+      if (words.length > 50) {
+        const allowedText = words.slice(0, 50).join(" ");
+        setFormData({ ...formData, [e.target.name]: allowedText });
+        return;
+      }
+    }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -22,6 +32,8 @@ function ComplaintForm({ onNext, prevStep, complaintId }) {
       alert("Error saving complaint details.");
     }
   };
+
+  const wordCount = formData.description.trim().split(/\s+/).filter(w => w.length > 0).length;
 
   return (
     <form onSubmit={handleSubmit} className="standard-form">
@@ -41,11 +53,15 @@ function ComplaintForm({ onNext, prevStep, complaintId }) {
       <label>Detailed Description</label>
       <textarea 
         name="description" 
-        placeholder="Describe what happened, who was involved, and any specific details..."
+        placeholder="Describe what happened, who was involved, and any specific details (Max 50 words)..."
         value={formData.description} 
         onChange={handleChange} 
         required
+        rows="4"
       ></textarea>
+      <div style={{ fontSize: '0.8rem', color: '#64748b', textAlign: 'right', marginTop: '5px' }}>
+        {wordCount} / 50 words
+      </div>
 
       <div className="form-row">
         <div>

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { FaSearch, FaArrowLeft, FaInfoCircle, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
 import './CoverPage.css';
 
+// Render deployment එක සඳහා API URL එක dynamic ලෙස සකස් කිරීම
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 function TrackComplaint({ onBack }) {
     const [crn, setCrn] = useState('');
     const [complaint, setComplaint] = useState(null);
@@ -17,7 +20,8 @@ function TrackComplaint({ onBack }) {
         setComplaint(null);
 
         try {
-            const response = await fetch(`http://localhost:5000/api/complaints/track/${crn}`);
+            // Localhost වෙනුවට `${API_URL}` භාවිතා කර dynamic ලෙස fetch call එක සිදු කිරීම
+            const response = await fetch(`${API_URL}/api/complaints/track/${crn}`);
             const data = await response.json();
 
             if (data.success) {
@@ -86,7 +90,6 @@ function TrackComplaint({ onBack }) {
                         {loading ? '...' : 'Track Status'}
                     </button>
                 </form>
-
 
                 {error && (
                     <div style={{ backgroundColor: '#fff1f2', color: '#be123c', padding: '20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '15px', border: '1px solid #fecdd3' }}>

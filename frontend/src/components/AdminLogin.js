@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { FaLock, FaUser, FaShieldAlt } from 'react-icons/fa';
 import './CoverPage.css';
 
+// Render deployment එක සඳහා API URL එක dynamic ලෙස සකස් කිරීම
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 function AdminLogin({ onLoginSuccess, onBack }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -14,7 +17,8 @@ function AdminLogin({ onLoginSuccess, onBack }) {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/admin/login', {
+            // Localhost වෙනුවට `${API_URL}` භාවිතා කර dynamic ලෙස login POST request එක සිදු කිරීම
+            const response = await fetch(`${API_URL}/api/admin/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -37,7 +41,7 @@ function AdminLogin({ onLoginSuccess, onBack }) {
     return (
         <div className="admin-login-container" style={{ maxWidth: '400px', margin: '100px auto', padding: '20px' }}>
             <div className="login-card" style={{ background: 'white', padding: '40px', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-                <div style={{ width: '60px', height: '60px', background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyCenter: 'center', margin: '0 auto 20px', color: '#0057b8', fontSize: '1.5rem' }}>
+                <div style={{ width: '60px', height: '60px', background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#0057b8', fontSize: '1.5rem' }}>
                     <FaShieldAlt style={{ margin: '0 auto' }} />
                 </div>
                 <h2 style={{ color: '#001e3c', marginBottom: '10px' }}>Admin Access</h2>
