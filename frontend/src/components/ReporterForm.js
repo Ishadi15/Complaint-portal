@@ -246,7 +246,7 @@ function ReporterForm({ onNext }) {
             style={{ ...inputStyle('email'), ...(isAnonymous ? { background: '#f1f5f9', color: '#000000', cursor: 'not-allowed' } : {}) }} />
           {!isAnonymous && (
             <p style={{ fontSize: '0.75rem', color: '#000000', marginTop: '4px' }}>
-              Used for CRN acknowledgement and follow-up.
+              Used valid email format
             </p>
           )}
           <FieldError msg={!isAnonymous && touched.email && errors.email} />
