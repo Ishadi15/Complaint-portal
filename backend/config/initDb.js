@@ -2,20 +2,20 @@ const db = require('./db');
 
 const initDb = () => {
   return new Promise((resolve, reject) => {
-    // 1. Create complaints table (includes all new reporter fields)
+    // 1. Create complaints table (Matches database column names exactly)
     const createComplaintsTable = `
       CREATE TABLE IF NOT EXISTS complaints (
         id INT AUTO_INCREMENT PRIMARY KEY,
         crn VARCHAR(20) UNIQUE,
-        submission_type VARCHAR(50),
+        submission_type VARCHAR(50) DEFAULT 'Named',
         reporter_category VARCHAR(100),
-        full_name VARCHAR(255),
-        employee_id VARCHAR(100),
-        division VARCHAR(255),
-        designation VARCHAR(255),
+        name VARCHAR(255),
+        employee_id VARCHAR(50),
+        department VARCHAR(100),
+        designation VARCHAR(100),
         email VARCHAR(255),
-        phone VARCHAR(50),
-        preferred_contact VARCHAR(50),
+        telephone VARCHAR(20),
+        preferred_contact_method VARCHAR(20),
         complaint_category VARCHAR(100),
         description TEXT,
         date_reported DATE,
@@ -45,10 +45,13 @@ const initDb = () => {
 
     // Migration: add new reporter columns if they don't exist (safe for existing deployments)
     const migrations = [
-      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS employee_id VARCHAR(100)",
-      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS division VARCHAR(255)",
-      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS designation VARCHAR(255)",
-      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS preferred_contact VARCHAR(50)"
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS submission_type VARCHAR(50) DEFAULT 'Named'",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS reporter_category VARCHAR(100)",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS employee_id VARCHAR(50)",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS department VARCHAR(100)",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS designation VARCHAR(100)",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS telephone VARCHAR(20)",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS preferred_contact_method VARCHAR(20)"
     ];
 
     // Step 1: create complaints table
@@ -69,7 +72,7 @@ const initDb = () => {
         }
         const sql = migrations[migrationIndex++];
         db.query(sql, (err) => {
-          if (err) console.warn("Migration skipped (likely already applied):", err.message);
+          if (err) console.warn("Migration skipped or already applied:", err.message);
           runNextMigration();
         });
       };
