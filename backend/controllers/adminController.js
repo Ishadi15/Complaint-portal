@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 exports.adminLogin = (req, res) => {
     const { username, password } = req.body;
-    const sql = "SELECT * FROM admins WHERE username = ?";
+    const sql = "SELECT * FROM test.admins WHERE username = ?";
     db.query(sql, [username], async (err, results) => {
         if (err) return res.status(500).json({ error: 'Database error' });
         if (results.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
