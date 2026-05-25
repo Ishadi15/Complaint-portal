@@ -30,7 +30,7 @@ function Portal() {
   const onAdminLoginSuccess = () => { setIsAdmin(true); setStep(21); };
   const onAdminLogout = () => { localStorage.removeItem('adminToken'); setIsAdmin(false); setStep(0); };
 
-  const progress = step > 0 && step < 6 ? ((step - 1) / 5) * 100 : 0;
+  const TOTAL_STEPS = 5;
 
   return (
     <div className="cover-page-wrapper" style={{
@@ -81,29 +81,38 @@ function Portal() {
 
       {/* Main Content Area */}
       <div style={{ flex: 1, padding: (step > 0 && step < 10) ? '40px 20px' : '0' }}>
-        {/* Progress Bar (Only show during form steps) */}
+        {/* Step Indicator — dynamic "Step X of 5" label only */}
         {step > 0 && step < 6 && (
-          <div style={{ maxWidth: '1000px', margin: '0 auto 20px' }}>
-            <div className="progress-container">
-              <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-            </div>
-            <p style={{ textAlign: 'right', color: '#ffffff', fontWeight: '800', fontSize: '15px', marginTop: '8px' }}>
+          <div style={{ maxWidth: '1280px', margin: '0 auto 18px', display: 'flex', justifyContent: 'flex-end' }}>
+            <span style={{
+              background: 'rgba(255,255,255,0.12)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: '50px',
+              padding: '6px 20px',
+              color: '#ffffff',
+              fontWeight: '700',
+              fontSize: '0.9rem',
+              letterSpacing: '0.5px'
+            }}>
               Step {step} of 5
-            </p>
+            </span>
           </div>
         )}
 
-        {/* Dynamic Component Rendering */}
-        {step === 0 && <CoverPage onStart={() => setStep(1)} onTrack={goToTrack} />}
-        {step === 1 && <ReporterForm onNext={(data) => nextStep(data.id)} />}
-        {step === 2 && <ComplaintForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
-        {step === 3 && <SubjectForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
-        {step === 4 && <EvidenceForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
-        {step === 5 && <DeclarationForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
-        {step === 6 && <Confirmation complaintId={complaintId} />}
-        {step === 10 && <TrackComplaint onBack={goToHome} />}
-        {step === 20 && <AdminLogin onLoginSuccess={onAdminLoginSuccess} onBack={goToHome} />}
-        {step === 21 && <AdminDashboard onLogout={onAdminLogout} />}
+        {/* Dynamic Component Rendering — wider 1280px container for form steps */}
+        <div style={(step > 0 && step < 7) ? { maxWidth: '1280px', margin: '0 auto', width: '100%' } : {}}>
+          {step === 0 && <CoverPage onStart={() => setStep(1)} onTrack={goToTrack} />}
+          {step === 1 && <ReporterForm onNext={(data) => nextStep(data.id)} />}
+          {step === 2 && <ComplaintForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
+          {step === 3 && <SubjectForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
+          {step === 4 && <EvidenceForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
+          {step === 5 && <DeclarationForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}
+          {step === 6 && <Confirmation complaintId={complaintId} />}
+          {step === 10 && <TrackComplaint onBack={goToHome} />}
+          {step === 20 && <AdminLogin onLoginSuccess={onAdminLoginSuccess} onBack={goToHome} />}
+          {step === 21 && <AdminDashboard onLogout={onAdminLogout} />}
+        </div>
       </div>
 
       {/* Footer */}
