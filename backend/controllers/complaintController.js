@@ -1,33 +1,83 @@
 const db = require('../config/db');
 const multer = require('multer');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// File upload setup
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // create uploads folder in backend
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
+// Configure Cloudinary credentials
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// File upload setup - use Cloudinary for serverless deployment
+const storage = process.env.CLOUDINARY_CLOUD_NAME 
+    ? new CloudinaryStorage({
+        cloudinary: cloudinary,
+        params: async (req, file) => {
+            return {
+                folder: 'complaint-portal/evidence',
+                resource_type: 'auto', // Allows non-image files like PDFs and Docs
+                upload_preset: 'vik3kv2t', // Explicitly using the Unsigned preset from Cloudinary dashboard
+                max_file_size: 5242880 // 5MB limit
+            };
+        }
+      })
+    : multer.memoryStorage(); // Fallback to memory storage if Cloudinary is not configured
+
+// Configure Multer validation rules
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 5242880 }, // 5MB file size limit
+    fileFilter: (req, file, cb) => {
+        const allowedMimes = [
+            'image/jpeg', 'image/png', 'image/jpg',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
+        
+        if (allowedMimes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error(`File type not allowed: ${file.mimetype}`));
+        }
     }
 });
-const upload = multer({ storage: storage });
-exports.uploadMiddleware = upload.single('evidence');
 
-// Step 1: Reporter
+// Middleware to handle single file upload error catch
+exports.uploadMiddleware = (req, res, next) => {
+    upload.single('evidence')(req, res, (err) => {
+        if (err) {
+            console.error("Multer upload error:", err.message);
+            return res.status(400).json({ error: 'File upload error: ' + err.message });
+        }
+        next();
+    });
+};
+
+// Step 1: Save Reporter details
 exports.saveReporter = (req, res) => {
     const { submission_type, reporter_category, full_name, email, phone } = req.body;
+    
+    if (!submission_type || !full_name || !email || !phone) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
     const sql = "INSERT INTO complaints (submission_type, reporter_category, full_name, email, phone) VALUES (?,?,?,?,?)";
     db.query(sql, [submission_type, reporter_category, full_name, email, phone], (err, result) => {
         if (err) {
             console.error("DB Error (saveReporter):", err.message);
-            return res.status(500).json({ error: 'Database error' });
+            return res.status(500).json({ error: 'Database error: ' + err.message });
         }
         res.json({ success: true, id: result.insertId });
     });
 };
 
-// Step 2: Complaint
+// Step 2: Save Complaint description details
 exports.saveComplaint = (req, res) => {
     const { complaint_category, description, date_reported, location, frequency } = req.body;
     const sql = "UPDATE complaints SET complaint_category=?, description=?, date_reported=?, location=?, frequency=? WHERE id=?";
@@ -37,7 +87,7 @@ exports.saveComplaint = (req, res) => {
     });
 };
 
-// Step 3: Subject
+// Step 3: Save Subject/Offender details
 exports.saveSubject = (req, res) => {
     const { subject_name, subject_role, organisation, senior_involved } = req.body;
     const sql = "UPDATE complaints SET subject_name=?, subject_role=?, organisation=?, senior_involved=? WHERE id=?";
@@ -47,17 +97,37 @@ exports.saveSubject = (req, res) => {
     });
 };
 
-// Step 4: Evidence
+// Step 4: Save Uploaded Evidence attachment reference
 exports.saveEvidence = (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    const sql = "UPDATE complaints SET evidence=? WHERE id=?";
-    db.query(sql, [req.file.filename, req.body.id], (err, result) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
-        res.json({ success: true });
-    });
+    if (!req.file) {
+        console.error("No file received in request");
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+    
+    try {
+        // Store either Cloudinary URL or filename depending on storage type
+        const fileReference = req.file.secure_url || req.file.path || req.file.filename;
+        
+        if (!fileReference) {
+            console.error("No file reference available:", req.file);
+            return res.status(400).json({ error: 'File upload failed - no file reference' });
+        }
+        
+        const sql = "UPDATE complaints SET evidence=? WHERE id=?";
+        db.query(sql, [fileReference, req.body.id], (err, result) => {
+            if (err) {
+                console.error("DB Error (saveEvidence):", err.message);
+                return res.status(500).json({ error: 'Database error: ' + err.message });
+            }
+            res.json({ success: true, fileUrl: fileReference });
+        });
+    } catch (error) {
+        console.error("Error in saveEvidence:", error.message);
+        res.status(500).json({ error: 'Error processing file: ' + error.message });
+    }
 };
 
-// Step 5: Declaration
+// Step 5: Save Legal Declaration acceptance
 exports.saveDeclaration = (req, res) => {
     const { declaration } = req.body;
     const sql = "UPDATE complaints SET declaration=? WHERE id=?";
@@ -67,7 +137,7 @@ exports.saveDeclaration = (req, res) => {
     });
 };
 
-// Step 6: Finalize complaint (generate CRN)
+// Step 6: Finalize complaint and generate Complaint Reference Number (CRN)
 function generateCRN() {
     const year = new Date().getFullYear();
     const num = String(Math.floor(Math.random() * 999999)).padStart(6, '0');
@@ -83,7 +153,7 @@ exports.finalizeComplaint = (req, res) => {
     });
 };
 
-// Track complaint
+// Track existing complaint status by CRN
 exports.getComplaintStatus = (req, res) => {
     const { crn } = req.params;
     const sql = "SELECT * FROM complaints WHERE crn = ?";
@@ -98,4 +168,3 @@ exports.getComplaintStatus = (req, res) => {
         res.json({ success: true, complaint: results[0] });
     });
 };
-
