@@ -96,9 +96,7 @@ function ComplaintForm({ onNext, prevStep, complaintId }) {
   };
 
   /* ── input style — red border when error ──────── */
-  const inputStyle = name => errors[name]
-    ? { borderColor: '#dc2626', background: '#fff5f5' }
-    : {};
+  const inputStyle = () => ({});
 
   const wordCount = formData.description.trim().split(/\s+/).filter(w => w.length > 0).length;
 

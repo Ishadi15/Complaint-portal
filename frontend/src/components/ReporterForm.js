@@ -124,9 +124,7 @@ function ReporterForm({ onNext }) {
   });
 
   /* ── input style — red border when error ────────────── */
-  const inputStyle = name => errors[name]
-    ? { borderColor: '#dc2626', background: '#fff5f5' }
-    : {};
+  const inputStyle = () => ({});
 
   /* ── render ─────────────────────────────────────────── */
   return (
