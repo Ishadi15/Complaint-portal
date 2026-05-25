@@ -2,7 +2,7 @@ const db = require('./db');
 
 const initDb = () => {
   return new Promise((resolve, reject) => {
-    // 1. Create complaints table
+    // 1. Create complaints table (includes all new reporter fields)
     const createComplaintsTable = `
       CREATE TABLE IF NOT EXISTS complaints (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -10,8 +10,12 @@ const initDb = () => {
         submission_type VARCHAR(50),
         reporter_category VARCHAR(100),
         full_name VARCHAR(255),
+        employee_id VARCHAR(100),
+        division VARCHAR(255),
+        designation VARCHAR(255),
         email VARCHAR(255),
         phone VARCHAR(50),
+        preferred_contact VARCHAR(50),
         complaint_category VARCHAR(100),
         description TEXT,
         date_reported DATE,
@@ -39,6 +43,15 @@ const initDb = () => {
       )
     `;
 
+    // Migration: add new reporter columns if they don't exist (safe for existing deployments)
+    const migrations = [
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS employee_id VARCHAR(100)",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS division VARCHAR(255)",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS designation VARCHAR(255)",
+      "ALTER TABLE complaints ADD COLUMN IF NOT EXISTS preferred_contact VARCHAR(50)"
+    ];
+
+    // Step 1: create complaints table
     db.query(createComplaintsTable, (err) => {
       if (err) {
         console.error("Error creating complaints table:", err.message);
@@ -46,6 +59,25 @@ const initDb = () => {
       }
       console.log("Complaints table verified/created ✅");
 
+      // Step 2: run migrations sequentially (safe no-ops if columns already exist)
+      let migrationIndex = 0;
+      const runNextMigration = () => {
+        if (migrationIndex >= migrations.length) {
+          // All migrations done — proceed to admins table
+          setupAdminsTable();
+          return;
+        }
+        const sql = migrations[migrationIndex++];
+        db.query(sql, (err) => {
+          if (err) console.warn("Migration skipped (likely already applied):", err.message);
+          runNextMigration();
+        });
+      };
+      runNextMigration();
+    });
+
+    // Step 3: create admins table then seed
+    const setupAdminsTable = () => {
       db.query(createAdminsTable, (err) => {
         if (err) {
           console.error("Error creating admins table:", err.message);
@@ -53,7 +85,7 @@ const initDb = () => {
         }
         console.log("Admins table verified/created ✅");
 
-        // 3. Seed default admin if table is empty
+        // Seed default admin if table is empty
         db.query("SELECT COUNT(*) as count FROM admins", (err, results) => {
           if (err) {
             console.error("Error checking admins count:", err.message);
@@ -76,7 +108,7 @@ const initDb = () => {
           }
         });
       });
-    });
+    };
   });
 };
 

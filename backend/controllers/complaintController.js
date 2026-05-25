@@ -61,14 +61,50 @@ exports.uploadMiddleware = (req, res, next) => {
 
 // Step 1: Save Reporter details
 exports.saveReporter = (req, res) => {
-    const { submission_type, reporter_category, full_name, email, phone } = req.body;
-    
-    if (!submission_type || !full_name || !email || !phone) {
-        return res.status(400).json({ error: 'Missing required fields' });
+    const {
+        submission_type,
+        reporter_category,
+        full_name,
+        employee_id,
+        division,
+        designation,
+        email,
+        phone,
+        preferred_contact
+    } = req.body;
+
+    const isAnonymous = submission_type === 'Anonymous';
+
+    // Named submissions require full_name and email
+    if (!submission_type) {
+        return res.status(400).json({ error: 'Submission type is required' });
     }
-    
-    const sql = "INSERT INTO complaints (submission_type, reporter_category, full_name, email, phone) VALUES (?,?,?,?,?)";
-    db.query(sql, [submission_type, reporter_category, full_name, email, phone], (err, result) => {
+    if (!isAnonymous && (!full_name || !email)) {
+        return res.status(400).json({ error: 'Full name and email are required for Named submissions' });
+    }
+
+    // For Anonymous, strip personal fields server-side as a safety measure
+    const safeName  = isAnonymous ? null : full_name;
+    const safeEmail = isAnonymous ? null : email;
+    const safePhone = isAnonymous ? null : (phone || null);
+    const safeEmpId = isAnonymous ? null : (employee_id || null);
+    const safePreferred = isAnonymous ? null : (preferred_contact || null);
+
+    const sql = `INSERT INTO complaints
+        (submission_type, reporter_category, full_name, employee_id, division, designation, email, phone, preferred_contact)
+        VALUES (?,?,?,?,?,?,?,?,?)`;
+
+    db.query(sql, [
+        submission_type,
+        reporter_category || null,
+        safeName,
+        safeEmpId,
+        division || null,
+        designation || null,
+        safeEmail,
+        safePhone,
+        safePreferred
+    ], (err, result) => {
         if (err) {
             console.error("DB Error (saveReporter):", err.message);
             return res.status(500).json({ error: 'Database error: ' + err.message });
@@ -76,6 +112,7 @@ exports.saveReporter = (req, res) => {
         res.json({ success: true, id: result.insertId });
     });
 };
+
 
 // Step 2: Save Complaint description details
 exports.saveComplaint = (req, res) => {
