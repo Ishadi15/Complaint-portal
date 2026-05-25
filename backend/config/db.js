@@ -1,6 +1,12 @@
 const mysql = require("mysql2");
 require("dotenv").config();
 
+// Determine SSL config: Railway public connections typically don't need SSL
+// Set DB_SSL=false in your Vercel env vars to disable SSL entirely
+const sslConfig = process.env.DB_SSL === 'false'
+  ? false
+  : { rejectUnauthorized: false };
+
 // Using a pool is better for handling multiple connections
 const db = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -8,13 +14,7 @@ const db = mysql.createPool({
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'test',
-  
-  
-  ssl: {
-    minVersion: 'TLSv1.2',
-    rejectUnauthorized: false
-  },
-  
+  ssl: sslConfig,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
