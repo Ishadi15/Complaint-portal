@@ -19,7 +19,8 @@ function ReporterForm({ onNext }) {
       const res = await saveReporter(formData);
       onNext(res.data);
     } catch (error) {
-      alert("Error saving reporter details.");
+      console.error("Reporter form error:", error.response?.data || error.message);
+      alert("Error saving reporter details: " + (error.response?.data?.error || error.message));
     }
   };
 

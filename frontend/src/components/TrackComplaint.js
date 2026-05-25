@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { FaSearch, FaArrowLeft, FaInfoCircle, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
 import './CoverPage.css';
 
-// Render deployment එක සඳහා API URL එක dynamic ලෙස සකස් කිරීම
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+// Fixed the API URL to point directly to the live Vercel backend deployment
+const API_URL = "https://complaint-backend-eight.vercel.app";
 
 function TrackComplaint({ onBack }) {
     const [crn, setCrn] = useState('');
@@ -20,7 +20,7 @@ function TrackComplaint({ onBack }) {
         setComplaint(null);
 
         try {
-            // Localhost වෙනුවට `${API_URL}` භාවිතා කර dynamic ලෙස fetch call එක සිදු කිරීම
+            // Using the static live API_URL for robust production tracking requests
             const response = await fetch(`${API_URL}/api/complaints/track/${crn}`);
             const data = await response.json();
 

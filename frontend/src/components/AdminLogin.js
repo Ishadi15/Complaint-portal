@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { FaLock, FaUser, FaShieldAlt } from 'react-icons/fa';
 import './CoverPage.css';
 
-// Render deployment එක සඳහා API URL එක dynamic ලෙස සකස් කිරීම
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_URL = "https://complaint-backend-eight.vercel.app";
 
 function AdminLogin({ onLoginSuccess, onBack }) {
     const [username, setUsername] = useState('');
