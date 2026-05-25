@@ -8,10 +8,12 @@ const db = mysql.createPool({
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'test',
-  // For cloud databases with self-signed certificates, you may need to disable SSL verification (not recommended for production)
+  
+  // 🔄 TiDB Cloud එක සඳහා SSL configuration එක මේ විදිහට සකස් කරන්න:
   ssl: {
-    rejectUnauthorized: true
+    minVersion: 'TLSv1.2'
   },
+  
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
