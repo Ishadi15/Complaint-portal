@@ -9,7 +9,7 @@ const db = mysql.createPool({
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'test',
   
-  // 🔄 TiDB Cloud එක සඳහා SSL configuration එක මේ විදිහට සකස් කරන්න:
+  
   ssl: {
     minVersion: 'TLSv1.2'
   },

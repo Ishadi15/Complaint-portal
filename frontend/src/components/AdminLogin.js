@@ -16,7 +16,7 @@ function AdminLogin({ onLoginSuccess, onBack }) {
         setError('');
 
         try {
-            // Localhost වෙනුවට `${API_URL}` භාවිතා කර dynamic ලෙස login POST request එක සිදු කිරීම
+           
             const response = await fetch(`${API_URL}/api/admin/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
