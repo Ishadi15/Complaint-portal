@@ -195,7 +195,7 @@ function ReporterForm({ onNext }) {
           : <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (disabled – Anonymous)</span>}
       </label>
       <input type="text" {...field('full_name')} value={formData.full_name}
-        placeholder={isAnonymous ? 'Not applicable for Anonymous submissions' : 'Full legal name'}
+        placeholder={isAnonymous ? 'Not applicable for Anonymous submissions' : 'Full  name'}
         disabled={isAnonymous}
         style={{ ...inputStyle('full_name'), ...(isAnonymous ? { background: '#f1f5f9', color: '#000000', cursor: 'not-allowed' } : {}) }} />
       <FieldError msg={!isAnonymous && touched.full_name && errors.full_name} />
