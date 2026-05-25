@@ -2,16 +2,36 @@ import React, { useState } from 'react';
 import { saveDeclaration } from '../services/api';
 import { FaExclamationTriangle, FaArrowLeft, FaCheck } from 'react-icons/fa';
 
+/* ── helper ───────────────────────────────────────── */
+function FieldError({ msg }) {
+  if (!msg) return null;
+  return (
+    <p style={{
+      color: '#dc2626',
+      fontSize: '0.8rem',
+      fontWeight: '600',
+      marginTop: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '5px'
+    }}>
+      <span style={{ fontSize: '1rem' }}>⚠</span> {msg}
+    </p>
+  );
+}
+
 function DeclarationForm({ onNext, prevStep, complaintId }) {
   const [agreed, setAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async e => {
     e.preventDefault();
     if (!agreed) {
-      alert("You must agree to the declaration before continuing.");
+      setError('Required, please fill this field');
       return;
     }
+    setError('');
     
     setIsSubmitting(true);
     try {
@@ -25,9 +45,12 @@ function DeclarationForm({ onNext, prevStep, complaintId }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="standard-form">
+    <form onSubmit={handleSubmit} className="standard-form" noValidate>
       <h2>Official Declaration</h2>
-      <p className="form-subtitle">Please verify and confirm the accuracy of your submission.</p>
+      <p className="form-subtitle">
+        Section 5 of 5 — Fields marked{' '}
+        <span style={{ color: '#dc2626', fontWeight: 700 }}>*</span> are required.
+      </p>
 
       <div className="warning-box">
         <FaExclamationTriangle className="warning-icon" />
@@ -42,11 +65,12 @@ function DeclarationForm({ onNext, prevStep, complaintId }) {
         <input 
           type="checkbox" 
           checked={agreed} 
-          onChange={e => setAgreed(e.target.checked)} 
+          onChange={e => { setAgreed(e.target.checked); if (e.target.checked) setError(''); }} 
           className="custom-checkbox"
         />
-        <span>I agree to the above declaration and confirm all details are correct.</span>
+        <span>I agree to the above declaration and confirm all details are correct. <span style={{ color: '#fca5a5' }}>*</span></span>
       </label>
+      <FieldError msg={error} />
 
       <div className="form-actions between">
         <button type="button" className="btn-secondary" onClick={prevStep}>

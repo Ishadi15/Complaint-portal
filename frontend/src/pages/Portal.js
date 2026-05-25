@@ -83,7 +83,7 @@ function Portal() {
       <div style={{ flex: 1, padding: (step > 0 && step < 10) ? '40px 20px' : '0' }}>
         {/* Step Indicator — dynamic "Step X of 5" label only */}
         {step > 0 && step < 6 && (
-          <div style={{ maxWidth: '1280px', margin: '0 auto 18px', display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ maxWidth: '1400px', margin: '0 auto 18px', display: 'flex', justifyContent: 'flex-end' }}>
             <span style={{
               background: 'rgba(255,255,255,0.12)',
               backdropFilter: 'blur(8px)',
@@ -101,7 +101,7 @@ function Portal() {
         )}
 
         {/* Dynamic Component Rendering — wider 1280px container for form steps */}
-        <div style={(step > 0 && step < 7) ? { maxWidth: '1280px', margin: '0 auto', width: '100%' } : {}}>
+        <div style={(step > 0 && step < 7) ? { maxWidth: '1400px', margin: '0 auto', width: '100%' } : {}}>
           {step === 0 && <CoverPage onStart={() => setStep(1)} onTrack={goToTrack} />}
           {step === 1 && <ReporterForm onNext={(data) => nextStep(data.id)} />}
           {step === 2 && <ComplaintForm onNext={nextStep} prevStep={prevStep} complaintId={complaintId} />}

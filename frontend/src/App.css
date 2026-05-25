@@ -290,7 +290,7 @@ form {
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); /* Softer shadow */
   margin: 25px auto; /* Reduced external margin */
   border: 1px solid rgba(0, 0, 0, 0.08); /* Lighter border */
-  max-width: 1280px;
+  max-width: 1400px;
   width: 100%;
 }
 

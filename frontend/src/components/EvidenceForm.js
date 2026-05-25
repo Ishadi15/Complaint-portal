@@ -39,7 +39,7 @@ function EvidenceForm({ onNext, prevStep, complaintId }) {
   return (
     <form onSubmit={handleSubmit} className="standard-form">
       <h2>Supporting Evidence</h2>
-      <p className="form-subtitle">Upload documents, photos, or recordings that support your claim.</p>
+      <p className="form-subtitle">Section 4 of 5 — Upload documents, photos, or recordings that support your claim. (Optional)</p>
 
       <div style={{ marginBottom: '25px' }}>
         <label htmlFor="evidence-category">Evidence Category</label>
