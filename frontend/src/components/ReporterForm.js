@@ -4,8 +4,8 @@ import { FaUser, FaUserSecret, FaArrowRight, FaEnvelope, FaPhone, FaBan } from '
 
 /* ── helpers ─────────────────────────────────────────── */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// International phone: optional +, digits/spaces/dashes/parens, 7-15 digits total
-const PHONE_RE = /^\+?[\d\s\-().]{7,20}$/;
+// Sri Lankan phone: +94 7X XXX XXXX or 07X XXX XXXX (10 digits local, 12 with country code)
+const PHONE_RE = /^(?:\+94\s?7[0-9]\s?\d{3}\s?\d{4}|07[0-9]\s?\d{3}\s?\d{4})$/;
 
 function FieldError({ msg }) {
   if (!msg) return null;
@@ -58,7 +58,7 @@ function ReporterForm({ onNext }) {
       else if (!EMAIL_RE.test(data.email.trim()))
         errs.email = 'Please enter a valid email address (e.g. name@example.com)';
       if (data.phone && !PHONE_RE.test(data.phone.trim()))
-        errs.phone = 'Please enter a valid phone number in international format (e.g. +94 77 123 4567)';
+        errs.phone = 'Please enter a valid Sri Lankan phone number (e.g. +94 77 123 4567 or 077 123 4567)';
     }
     return errs;
   };
@@ -132,30 +132,32 @@ function ReporterForm({ onNext }) {
   return (
     <form onSubmit={handleSubmit} className="standard-form" noValidate>
       <h2>Reporter Information</h2>
-      <p className="form-subtitle">
-        Section 1 of 5 — Fields marked{' '}
-        <span style={{ color: '#dc2626', fontWeight: 700 }}>*</span> are required.
-      </p>
 
-      {/* ── Submission Type ──────────────────────────── */}
+      {/* ── Submission Type (standard radio buttons) ── */}
       <label style={{ marginBottom: '8px' }}>
         Submission Type <span style={{ color: '#dc2626' }}>*</span>
       </label>
-      <div className="radio-group-grid">
-        <label className={`radio-card ${formData.submission_type === 'Named' ? 'active-named' : ''}`}>
+      <div style={{ display: 'flex', gap: '28px', marginBottom: '20px', marginTop: '6px' }}>
+        <label style={{
+          display: 'flex', alignItems: 'center', gap: '10px',
+          cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600, color: '#1e293b'
+        }}>
           <input type="radio" {...field('submission_type')} value="Named"
-            checked={formData.submission_type === 'Named'} style={{ display: 'none' }} />
-          <FaUser className="radio-icon named-icon" />
-          <span className="radio-title">Named</span>
-          <span className="radio-desc">Standard identified report</span>
+            checked={formData.submission_type === 'Named'}
+            style={{ width: '18px', height: '18px', accentColor: '#0057b8', cursor: 'pointer' }} />
+          <FaUser style={{ color: formData.submission_type === 'Named' ? '#0057b8' : '#94a3b8', fontSize: '0.95rem' }} />
+          Named
         </label>
 
-        <label className={`radio-card ${isAnonymous ? 'active-anonymous' : ''}`}>
+        <label style={{
+          display: 'flex', alignItems: 'center', gap: '10px',
+          cursor: 'pointer', fontSize: '0.95rem', fontWeight: 600, color: '#1e293b'
+        }}>
           <input type="radio" {...field('submission_type')} value="Anonymous"
-            checked={isAnonymous} style={{ display: 'none' }} />
-          <FaUserSecret className="radio-icon anon-icon" />
-          <span className="radio-title">Anonymous</span>
-          <span className="radio-desc">Private confidential report</span>
+            checked={isAnonymous}
+            style={{ width: '18px', height: '18px', accentColor: '#0057b8', cursor: 'pointer' }} />
+          <FaUserSecret style={{ color: isAnonymous ? '#0057b8' : '#94a3b8', fontSize: '0.95rem' }} />
+          Anonymous
         </label>
       </div>
 
@@ -264,7 +266,7 @@ function ReporterForm({ onNext }) {
             style={{ ...inputStyle('phone'), ...(isAnonymous ? { background: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' } : {}) }} />
           {!isAnonymous && (
             <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>
-              International format accepted (e.g. +94 77 123 4567).
+              Sri Lankan format: +94 7X XXX XXXX or 07X XXX XXXX
             </p>
           )}
           <FieldError msg={!isAnonymous && touched.phone && errors.phone} />
