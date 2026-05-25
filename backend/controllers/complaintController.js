@@ -12,7 +12,7 @@ cloudinary.config({
 });
 
 // File upload setup - use Cloudinary for serverless deployment
-const storage = process.env.CLOUDINARY_CLOUD_NAME 
+const storage = process.env.CLOUDINARY_CLOUD_NAME
     ? new CloudinaryStorage({
         cloudinary: cloudinary,
         params: async (req, file) => {
@@ -23,11 +23,11 @@ const storage = process.env.CLOUDINARY_CLOUD_NAME
                 max_file_size: 5242880 // 5MB limit
             };
         }
-      })
+    })
     : multer.memoryStorage(); // Fallback to memory storage if Cloudinary is not configured
 
 // Configure Multer validation rules
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     limits: { fileSize: 5242880 }, // 5MB file size limit
     fileFilter: (req, file, cb) => {
@@ -39,7 +39,7 @@ const upload = multer({
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ];
-        
+
         if (allowedMimes.includes(file.mimetype)) {
             cb(null, true);
         } else {
@@ -59,7 +59,7 @@ exports.uploadMiddleware = (req, res, next) => {
     });
 };
 
-// Step 1: Save Reporter details
+// Step 1: Save Reporter details (Updated SQL Column Names)
 exports.saveReporter = (req, res) => {
     const {
         submission_type,
@@ -84,26 +84,27 @@ exports.saveReporter = (req, res) => {
     }
 
     // For Anonymous, strip personal fields server-side as a safety measure
-    const safeName  = isAnonymous ? null : full_name;
+    const safeName = isAnonymous ? null : full_name;
     const safeEmail = isAnonymous ? null : email;
     const safePhone = isAnonymous ? null : (phone || null);
     const safeEmpId = isAnonymous ? null : (employee_id || null);
     const safePreferred = isAnonymous ? null : (preferred_contact || null);
 
+    // ✅ SQL Query එක Database Columns වලට ගැලපෙන විදිහට නිවැරදි කර ඇත.
     const sql = `INSERT INTO complaints
-        (submission_type, reporter_category, full_name, employee_id, division, designation, email, phone, preferred_contact)
+        (submission_type, reporter_category, name, employee_id, department, designation, email, telephone, preferred_contact_method)
         VALUES (?,?,?,?,?,?,?,?,?)`;
 
     db.query(sql, [
         submission_type,
         reporter_category || null,
-        safeName,
-        safeEmpId,
-        division || null,
-        designation || null,
-        safeEmail,
-        safePhone,
-        safePreferred
+        safeName,                  // Maps to 'name' column
+        safeEmpId,                 // Maps to 'employee_id' column
+        division || null,          // Maps to 'department' column
+        designation || null,       // Maps to 'designation' column
+        safeEmail,                 // Maps to 'email' column
+        safePhone,                 // Maps to 'telephone' column
+        safePreferred              // Maps to 'preferred_contact_method' column
     ], (err, result) => {
         if (err) {
             console.error("DB Error (saveReporter):", err.message);
@@ -140,16 +141,16 @@ exports.saveEvidence = (req, res) => {
         console.error("No file received in request");
         return res.status(400).json({ error: 'No file uploaded' });
     }
-    
+
     try {
         // Store either Cloudinary URL or filename depending on storage type
         const fileReference = req.file.secure_url || req.file.path || req.file.filename;
-        
+
         if (!fileReference) {
             console.error("No file reference available:", req.file);
             return res.status(400).json({ error: 'File upload failed - no file reference' });
         }
-        
+
         const sql = "UPDATE complaints SET evidence=? WHERE id=?";
         db.query(sql, [fileReference, req.body.id], (err, result) => {
             if (err) {
