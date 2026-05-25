@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const complaintRoutes = require('./routes/complaintRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const initDb = require('./config/initDb');
 
 const app = express();
 
@@ -33,9 +34,19 @@ app.use(bodyParser.json());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  console.log("Current DB_HOST:", process.env.DB_HOST);
+  console.log("Current DB_USER:", process.env.DB_USER);
+  console.log("Current DB_NAME:", process.env.DB_NAME);
+  console.log("Current DB_PORT:", process.env.DB_PORT);
+  console.log("Current DB_PASSWORD Length:", process.env.DB_PASSWORD ? process.env.DB_PASSWORD.length : 0);
+
   res.json({ 
     status: 'ok', 
     db: process.env.DB_HOST ? 'configured' : 'not configured',
+    db_host: process.env.DB_HOST,
+    db_user: process.env.DB_USER,
+    db_name: process.env.DB_NAME,
+    db_port: process.env.DB_PORT,
     cloudinary: process.env.CLOUDINARY_CLOUD_NAME ? 'configured' : 'not configured'
   });
 });
@@ -44,8 +55,18 @@ app.get('/health', (req, res) => {
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Server Initialization
+// Database Initialization and Server Startup
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+initDb()
+  .then(() => {
+    console.log("Database schema check and seeding completed successfully.");
+  })
+  .catch((err) => {
+    console.error("Database initialization failed but proceeding to start server:", err.message);
+  })
+  .finally(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  });

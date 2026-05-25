@@ -5,10 +5,13 @@ const jwt = require('jsonwebtoken');
 exports.adminLogin = (req, res) => {
     const { username, password } = req.body;
     
-    // Explicitly targeting the test.admins table
-    const sql = "SELECT * FROM test.admins WHERE username = ?";
+    // Targeting the correct admins table in the active database
+    const sql = "SELECT * FROM admins WHERE username = ?";
     db.query(sql, [username], async (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        if (err) {
+            console.error("Database Login Error:", err.message);
+            return res.status(500).json({ error: 'Database error: ' + err.message });
+        }
         
         // If user is not found, return 401
         if (results.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
@@ -34,7 +37,10 @@ exports.adminLogin = (req, res) => {
 exports.getAllComplaints = (req, res) => {
     const sql = "SELECT * FROM complaints ORDER BY created_at DESC";
     db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        if (err) {
+            console.error("Database getAllComplaints Error:", err.message);
+            return res.status(500).json({ error: 'Database error: ' + err.message });
+        }
         res.json({ success: true, complaints: results });
     });
 };
@@ -43,7 +49,10 @@ exports.updateComplaintStatus = (req, res) => {
     const { id, status } = req.body;
     const sql = "UPDATE complaints SET status = ? WHERE id = ?";
     db.query(sql, [status, id], (err, result) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        if (err) {
+            console.error("Database updateComplaintStatus Error:", err.message);
+            return res.status(500).json({ error: 'Database error: ' + err.message });
+        }
         res.json({ success: true });
     });
 };
@@ -58,7 +67,10 @@ exports.getStats = (req, res) => {
         FROM complaints
     `;
     db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+        if (err) {
+            console.error("Database getStats Error:", err.message);
+            return res.status(500).json({ error: 'Database error: ' + err.message });
+        }
         res.json({ success: true, stats: results[0] });
     });
 };

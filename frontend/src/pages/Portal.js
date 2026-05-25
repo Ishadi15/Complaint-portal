@@ -9,7 +9,7 @@ import Confirmation from '../components/Confirmation';
 import TrackComplaint from '../components/TrackComplaint';
 import AdminLogin from '../components/AdminLogin';
 import AdminDashboard from '../components/AdminDashboard';
-import { FaGlobe, FaMoon, FaEnvelope, FaPhoneAlt, FaLock } from 'react-icons/fa';
+import { FaMoon, FaEnvelope, FaPhoneAlt, FaLock } from 'react-icons/fa';
 import '../components/CoverPage.css';
 
 function Portal() {
@@ -33,35 +33,28 @@ function Portal() {
   const progress = step > 0 && step < 6 ? ((step - 1) / 5) * 100 : 0;
 
   return (
-    <div className="cover-page-wrapper" style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
+    <div className="cover-page-wrapper" style={{
+      display: 'flex',
+      flexDirection: 'column',
       minHeight: '100vh'
     }}>
       {/* Header (Top Navigation Bar) */}
       <header className="navbar-portal">
         <div className="nav-left" onClick={goToHome} style={{ cursor: 'pointer' }}>
           <img src="/logo_mobitel.png" alt="SLTMOBITEL Logo" className="nav-logo-portal" />
-          <div className="nav-brand-container">
-            <div className="nav-brand-name">SLT<span>MOBITEL</span></div>
-            <div className="nav-unit-badge">Internal Affairs Unit | Secure Reporting Portal</div>
-          </div>
         </div>
-        
+
         <div className="nav-right">
           {step === 0 && (
             <nav className="nav-menu-portal">
               <a href="#home" className="nav-link-portal">Home</a>
-              <a href="#about" className="nav-link-portal">About Portal</a>
-              <a href="#how-it-works" className="nav-link-portal">How It Works</a>
-              <a href="#faq" className="nav-link-portal">FAQ</a>
               <a href="#track" className="nav-link-portal" onClick={goToTrack}>Track</a>
-              <a href="#admin" onClick={(e) => { e.preventDefault(); goToAdminLogin(); }} style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+              <a href="#admin" onClick={(e) => { e.preventDefault(); goToAdminLogin(); }} style={{
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
-                gap: '10px', 
-                color: '#0057b8', 
+                gap: '10px',
+                color: '#0057b8',
                 background: '#f1f5f9',
                 padding: '12px 40px',
                 borderRadius: '50px',
@@ -74,14 +67,11 @@ function Portal() {
               </a>
             </nav>
           )}
-          
+
           <div className="nav-controls">
             {step === 21 && (
-                <span style={{ color: '#0057b8', fontWeight: '700', marginRight: '15px' }}>Admin Mode</span>
+              <span style={{ color: '#0057b8', fontWeight: '700', marginRight: '15px' }}>Admin Mode</span>
             )}
-            <div className="lang-selector">
-              <FaGlobe /> EN | සිං | தமி
-            </div>
             <div className="theme-toggle" style={{ cursor: 'pointer' }}>
               <FaMoon />
             </div>
@@ -102,7 +92,7 @@ function Portal() {
             </p>
           </div>
         )}
-        
+
         {/* Dynamic Component Rendering */}
         {step === 0 && <CoverPage onStart={() => setStep(1)} onTrack={goToTrack} />}
         {step === 1 && <ReporterForm onNext={(data) => nextStep(data.id)} />}
@@ -126,7 +116,7 @@ function Portal() {
               Strengthening integrity and transparency across our organization.
             </p>
           </div>
-          
+
           <div className="footer-links">
             <h4>Quick Links</h4>
             <ul>
@@ -136,17 +126,17 @@ function Portal() {
               <li><a href="#faq">FAQ</a></li>
             </ul>
           </div>
-          
+
           <div className="footer-links">
             <h4>Contact Us</h4>
             <ul>
-              <li><FaEnvelope style={{ marginRight: '10px' }}/> iau@sltmobitel.lk</li>
-              <li><FaPhoneAlt style={{ marginRight: '10px' }}/> +94 11 234 5678</li>
+              <li><FaEnvelope style={{ marginRight: '10px' }} /> iau@sltmobitel.lk</li>
+              <li><FaPhoneAlt style={{ marginRight: '10px' }} /> +94 11 234 5678</li>
               <li>IAU Headquarters, Colombo, Sri Lanka</li>
             </ul>
           </div>
         </div>
-        
+
         <div className="footer-bottom">
           <p>© {new Date().getFullYear()} SLTMOBITEL Internal Affairs Unit. All Rights Reserved.</p>
           <div className="footer-legal">
