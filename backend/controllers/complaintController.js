@@ -90,21 +90,21 @@ exports.saveReporter = (req, res) => {
     const safeEmpId = isAnonymous ? null : (employee_id || null);
     const safePreferred = isAnonymous ? null : (preferred_contact || null);
 
-    // ✅ SQL Query එක Database Columns වලට ගැලපෙන විදිහට නිවැරදි කර ඇත.
+    // Reverted SQL query to match the columns defined in initDb.js (full_name, division, phone, preferred_contact)
     const sql = `INSERT INTO complaints
-        (submission_type, reporter_category, name, employee_id, department, designation, email, telephone, preferred_contact_method)
+        (submission_type, reporter_category, full_name, employee_id, division, designation, email, phone, preferred_contact)
         VALUES (?,?,?,?,?,?,?,?,?)`;
 
     db.query(sql, [
         submission_type,
         reporter_category || null,
-        safeName,                  // Maps to 'name' column
+        safeName,                  // Maps to 'full_name' column
         safeEmpId,                 // Maps to 'employee_id' column
-        division || null,          // Maps to 'department' column
+        division || null,          // Maps to 'division' column
         designation || null,       // Maps to 'designation' column
         safeEmail,                 // Maps to 'email' column
-        safePhone,                 // Maps to 'telephone' column
-        safePreferred              // Maps to 'preferred_contact_method' column
+        safePhone,                 // Maps to 'phone' column
+        safePreferred              // Maps to 'preferred_contact' column
     ], (err, result) => {
         if (err) {
             console.error("DB Error (saveReporter):", err.message);
