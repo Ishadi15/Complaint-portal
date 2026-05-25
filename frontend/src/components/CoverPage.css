@@ -26,7 +26,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 5%;
+  padding: 0 5%;
+  height: 80px;
   background: #ffffff; /* Matches the white background of the logo */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #e2e8f0;
@@ -39,10 +40,13 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  height: 100%;
+  overflow: hidden; /* Clip the logo's vertical padding to the navbar boundary */
 }
 
 .nav-logo-portal {
-  height: 50px; /* Slightly larger for visibility */
+  height: 140px; /* Large size to make the actual logo content match the navbar height */
+  display: block;
   object-fit: contain;
 }
 
@@ -449,6 +453,15 @@
 
   .info-section {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-portal {
+    height: 65px;
+  }
+  .nav-logo-portal {
+    height: 110px; /* Scale down proportionally for mobile */
   }
 }
 
