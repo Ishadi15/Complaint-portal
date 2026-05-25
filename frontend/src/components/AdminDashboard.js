@@ -4,8 +4,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import './CoverPage.css';
 
-// Dynamic API URL config for local testing and production deployment
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_URL = "https://complaint-backend-eight.vercel.app";
 
 const CATEGORIES = [
     'All Categories',
