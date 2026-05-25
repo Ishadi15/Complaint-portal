@@ -11,10 +11,14 @@ const db = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  // 🎯 This bypasses the self-signed certificate error on Vercel
+  // 🎯 This bypasses the self-signed certificate error on Vercel/Railway
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+    checkServerIdentity: false
+  },
+  // Prevent timeout issues
+  enableKeepAlive: true,
+  keepAliveInitialDelayMs: 0
 });
 
 // Test connection
