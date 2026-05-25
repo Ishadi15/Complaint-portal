@@ -192,12 +192,12 @@ function ReporterForm({ onNext }) {
         Full Name{' '}
         {!isAnonymous
           ? <span style={{ color: '#dc2626' }}>*</span>
-          : <span style={{ color: '#f8fafdff', fontWeight: 400, fontSize: '0.8rem' }}> (disabled – Anonymous)</span>}
+          : <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (disabled – Anonymous)</span>}
       </label>
       <input type="text" {...field('full_name')} value={formData.full_name}
         placeholder={isAnonymous ? 'Not applicable for Anonymous submissions' : 'Full legal name'}
         disabled={isAnonymous}
-        style={{ ...inputStyle('full_name'), ...(isAnonymous ? { background: '#f1f5f9ff', color: '#94a3b8', cursor: 'not-allowed' } : {}) }} />
+        style={{ ...inputStyle('full_name'), ...(isAnonymous ? { background: '#f1f5f9', color: '#000000', cursor: 'not-allowed' } : {}) }} />
       <FieldError msg={!isAnonymous && touched.full_name && errors.full_name} />
 
       {/* ── Employee ID + Division ───────────────────── */}
@@ -206,17 +206,17 @@ function ReporterForm({ onNext }) {
           <label>
             Employee / Staff ID
             {isAnonymous
-              ? <span style={{ color: '#fcfdffff', fontWeight: 400, fontSize: '0.8rem' }}> (disabled)</span>
-              : <span style={{ color: '#feffffff', fontWeight: 400, fontSize: '0.8rem' }}> (if applicable)</span>}
+              ? <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (disabled)</span>
+              : <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (if applicable)</span>}
           </label>
           <input type="text" {...field('employee_id')} value={formData.employee_id}
             placeholder={isAnonymous ? 'N/A' : 'e.g. SLT-12345'} disabled={isAnonymous}
-            style={isAnonymous ? { background: '#f1f5f9', color: '#f9fafbff', cursor: 'not-allowed' } : {}} />
+            style={isAnonymous ? { background: '#f1f5f9', color: '#000000', cursor: 'not-allowed' } : {}} />
         </div>
         <div>
           <label>
             Division / Department
-            <span style={{ color: '#fefeffff', fontWeight: 400, fontSize: '0.8rem' }}> (if applicable)</span>
+            <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (if applicable)</span>
           </label>
           <input type="text" {...field('division')} value={formData.division}
             placeholder="e.g. Finance, IT, Operations" />
@@ -226,7 +226,7 @@ function ReporterForm({ onNext }) {
       {/* ── Designation ─────────────────────────────── */}
       <label>
         Designation
-        <span style={{ color: '#fafbfcff', fontWeight: 400, fontSize: '0.8rem' }}> (if applicable)</span>
+        <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (if applicable)</span>
       </label>
       <input type="text" {...field('designation')} value={formData.designation}
         placeholder="e.g. Senior Manager, Engineer" />
@@ -238,14 +238,14 @@ function ReporterForm({ onNext }) {
             Contact Email Address{' '}
             {!isAnonymous
               ? <span style={{ color: '#dc2626' }}>*</span>
-              : <span style={{ color: '#f8f9faff', fontWeight: 400, fontSize: '0.8rem' }}> (disabled)</span>}
+              : <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (disabled)</span>}
           </label>
           <input type="email" {...field('email')} value={formData.email}
             placeholder={isAnonymous ? 'N/A' : 'your.email@sltmobitel.lk'}
             disabled={isAnonymous}
-            style={{ ...inputStyle('email'), ...(isAnonymous ? { background: '#f1f5f9', color: '#f8fafcff', cursor: 'not-allowed' } : {}) }} />
+            style={{ ...inputStyle('email'), ...(isAnonymous ? { background: '#f1f5f9', color: '#000000', cursor: 'not-allowed' } : {}) }} />
           {!isAnonymous && (
-            <p style={{ fontSize: '0.75rem', color: '#fbfcfdff', marginTop: '4px' }}>
+            <p style={{ fontSize: '0.75rem', color: '#000000', marginTop: '4px' }}>
               Used for CRN acknowledgement and follow-up.
             </p>
           )}
@@ -255,15 +255,15 @@ function ReporterForm({ onNext }) {
           <label>
             Contact Telephone
             {isAnonymous
-              ? <span style={{ color: '#f9fafbff', fontWeight: 400, fontSize: '0.8rem' }}> (disabled)</span>
-              : <span style={{ color: '#ffffffff', fontWeight: 400, fontSize: '0.8rem' }}> (optional)</span>}
+              ? <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (disabled)</span>
+              : <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (optional)</span>}
           </label>
           <input type="tel" {...field('phone')} value={formData.phone}
             placeholder={isAnonymous ? 'N/A' : '+94 77 XXX XXXX'}
             disabled={isAnonymous}
-            style={{ ...inputStyle('phone'), ...(isAnonymous ? { background: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' } : {}) }} />
+            style={{ ...inputStyle('phone'), ...(isAnonymous ? { background: '#f1f5f9', color: '#000000', cursor: 'not-allowed' } : {}) }} />
           {!isAnonymous && (
-            <p style={{ fontSize: '0.75rem', color: '#ffffffff', marginTop: '4px' }}>
+            <p style={{ fontSize: '0.75rem', color: '#000000', marginTop: '4px' }}>
               Sri Lankan format: +94 7X XXX XXXX or 07X XXX XXXX
             </p>
           )}
@@ -275,8 +275,8 @@ function ReporterForm({ onNext }) {
       <label style={{ marginTop: '15px' }}>
         Preferred Contact Method
         {isAnonymous
-          ? <span style={{ color: '#fcfeffff', fontWeight: 400, fontSize: '0.8rem' }}> (disabled)</span>
-          : <span style={{ color: '#fbfcfdff', fontWeight: 400, fontSize: '0.8rem' }}> (optional)</span>}
+          ? <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (disabled)</span>
+          : <span style={{ color: '#000000', fontWeight: 400, fontSize: '0.8rem' }}> (optional)</span>}
       </label>
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '8px' }}>
         {[
